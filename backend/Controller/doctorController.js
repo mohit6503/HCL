@@ -78,4 +78,3 @@ export const getDoctorDashboard = async (req, res) => {
   }
 };
 
-

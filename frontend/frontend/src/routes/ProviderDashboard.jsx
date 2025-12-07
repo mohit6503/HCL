@@ -10,6 +10,30 @@ function ProviderDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // -------- FIXED DUMMY PATIENTS (NO RANDOM) --------
+  const fixedDummyPatients = [
+    {
+      patient: {
+        id: "dummy-nike",
+        name: "Nike",
+      },
+      latestLog: {
+        goalStatus: "MET",
+      },
+      upcomingCheck: "Next Week",
+    },
+    {
+      patient: {
+        id: "dummy-mohit",
+        name: "Mohit",
+      },
+      latestLog: {
+        goalStatus: "PENDING",
+      },
+      upcomingCheck: "Tomorrow",
+    }
+  ];
+
   useEffect(() => {
     if (!user) return;
 
@@ -20,10 +44,20 @@ function ProviderDashboard() {
 
         console.log("Doctor dashboard data:", res.data);
 
-        setPatients(res.data.patients || []);
+        if (res.data.patients && res.data.patients.length > 0) {
+          // Show real patients
+          setPatients(res.data.patients);
+        } else {
+          // Show the fixed 2 dummy patients
+          setPatients(fixedDummyPatients);
+        }
+
       } catch (err) {
         console.error("Error loading doctor dashboard:", err);
-        setError("Unable to load patients. Check backend.");
+
+        // On backend error → show dummy data
+        setPatients(fixedDummyPatients);
+        setError("Unable to load real patients. Showing demo patients.");
       } finally {
         setLoading(false);
       }
@@ -34,7 +68,6 @@ function ProviderDashboard() {
 
   if (!user) return <div>Unauthorized</div>;
   if (loading) return <div>Loading...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
 
   return (
     <div className="app-layout">
@@ -43,8 +76,10 @@ function ProviderDashboard() {
       <main className="main-content">
         <h1>My Patients</h1>
 
+        {error && <p style={{ color: "orange" }}>{error}</p>}
+
         {patients.length === 0 ? (
-          <p>No patients assigned yet.</p>
+          <p>No patients assigned.</p>
         ) : (
           <PatientList patients={patients} />
         )}
