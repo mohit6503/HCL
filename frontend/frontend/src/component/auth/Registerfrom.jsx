@@ -50,7 +50,7 @@ function RegisterForm({ onRegister }) {
       <label>Role</label>
       <select name="role" value={form.role} onChange={handleChange}>
         <option value="patient">Patient</option>
-        <option value="provider">Healthcare Provider</option>
+        <option value="doctor">Healthcare Provider</option>
       </select>
 
       <label className="checkbox-row">

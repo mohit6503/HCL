@@ -1,4 +1,44 @@
-// src/components/auth/LoginForm.jsx
+// // src/context/AuthContext.jsx
+// import { createContext, useContext, useState, useEffect } from "react";
+
+// const AuthContext = createContext(null);
+
+// export function AuthProvider({ children }) {
+//   const [user, setUser] = useState(null); // { name, email, role, token, userId }
+
+//   useEffect(() => {
+//     const stored = localStorage.getItem("auth");
+//     if (stored) {
+//       try {
+//         setUser(JSON.parse(stored));
+//       } catch {
+//         localStorage.removeItem("auth");
+//       }
+//     }
+//   }, []);
+
+//   const login = (userData) => {
+//     setUser(userData);
+//     localStorage.setItem("auth", JSON.stringify(userData));
+//   };
+
+//   const logout = () => {
+//     setUser(null);
+//     localStorage.removeItem("auth");
+//   };
+
+//   return (
+//     <AuthContext.Provider value={{ user, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// }
+
+// export default function useAuth() {
+//   return useContext(AuthContext);
+// }
+
+
 import { useState } from "react";
 
 function LoginForm({ onLogin }) {
@@ -9,32 +49,41 @@ function LoginForm({ onLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError("Please enter email and password.");
       return;
     }
     setError("");
+
     onLogin({ email, password, role });
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="login-form">
+
       {error && <p className="error">{error}</p>}
 
       <label>Email</label>
-      <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+      />
 
       <label>Password</label>
       <input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        placeholder="Enter your password"
       />
 
       <label>Role</label>
       <select value={role} onChange={(e) => setRole(e.target.value)}>
         <option value="patient">Patient</option>
-        <option value="provider">Healthcare Provider</option>
+        <option value="doctor">Doctor</option>
       </select>
 
       <button type="submit">Login</button>

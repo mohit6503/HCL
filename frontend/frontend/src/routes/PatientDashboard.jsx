@@ -1,112 +1,93 @@
 // src/routes/PatientDashboard.jsx
-import { useAuth } from "../context/AuthContext";
-import Sidebar from "../components/layout/Sidebar";
-
-const dummyGoals = {
-  steps: { current: 3620, target: 8000 },
-  activeMinutes: { current: 56, target: 60 },
-  sleep: { current: 6.5, target: 8 },
-};
-
-const dummyReminders = [
-  {
-    id: 1,
-    text: "Upcoming: Annual blood test on 23rd June 2025",
-  },
-];
-
-const healthTip =
-  "Stay hydrated! Aim to drink at least 8 glasses of water per day.";
+import { useEffect, useState } from "react";
+import api from "../api/api";
+import { useAuth } from "../context/AuthContext.jsx";
+import Sidebar from "../component/Layout/Sidebar.jsx";
+import GoalTrackerForm from "../component/dashboard/GoalTrackerForm.jsx";
+import HealthTipCard from "../component/dashboard/HealthTipCard.jsx";
+import ReminderList from "../component/dashboard/ReminderList.jsx";
 
 function PatientDashboard() {
   const { user } = useAuth();
+  const [data, setData] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    api.get(`/dashboard/patient/${user.userId}`)
+      .then((res) => setData(res.data))
+      .catch((err) => console.error(err));
+  }, [user, refreshKey]);
+
+  const markGoal = async (status) => {
+    try {
+      await api.put("/patient/mark-goal", {
+        logId: data.latestLog?._id,
+        status,
+      });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      console.error(err);
+      alert("Unable to update goal status");
+    }
+  };
+
+  if (!user) return <div>Unauthorized</div>;
+  if (!data) return <div>Loading...</div>;
+
+  const latest = data.latestLog || {};
 
   return (
     <div className="app-layout">
       <Sidebar role="patient" />
-
       <main className="main-content">
-        <h1>Welcome, {user?.name || "Patient"}</h1>
+        <h1>Welcome, {user.name}</h1>
 
         <section className="wellness-section">
           <h2>Wellness Goals</h2>
           <div className="goals-grid">
-            <GoalCard
-              title="Steps"
-              value={`${dummyGoals.steps.current} / ${dummyGoals.steps.target} steps`}
-              percent={(dummyGoals.steps.current / dummyGoals.steps.target) * 100}
-            />
-            <GoalCard
-              title="Active Time"
-              value={`${dummyGoals.activeMinutes.current} / ${dummyGoals.activeMinutes.target} mins`}
-              percent={
-                (dummyGoals.activeMinutes.current /
-                  dummyGoals.activeMinutes.target) *
-                100
-              }
-            />
-            <GoalCard
-              title="Sleep"
-              value={`${dummyGoals.sleep.current} / ${dummyGoals.sleep.target} hrs`}
-              percent={(dummyGoals.sleep.current / dummyGoals.sleep.target) * 100}
-            />
+            <div className="goal-card">
+              <h3>Steps</h3>
+              <p>{latest.steps ?? 0} steps</p>
+            </div>
+            <div className="goal-card">
+              <h3>Water</h3>
+              <p>{latest.water ?? 0} glasses</p>
+            </div>
+            <div className="goal-card">
+              <h3>Sleep</h3>
+              <p>{latest.sleep ?? 0} hrs</p>
+            </div>
           </div>
         </section>
 
         <section className="two-column">
           <div>
             <h2>Preventive Care Reminders</h2>
-            <ul className="reminder-list">
-              {dummyReminders.map((r) => (
-                <li key={r.id}>{r.text}</li>
-              ))}
-            </ul>
+            <ReminderList reminders={data.reminders || []} />
 
             <h2>Health Tip of the Day</h2>
-            <p className="health-tip">{healthTip}</p>
+            <HealthTipCard tip={data.tip?.text || "No tip for today."} />
+
+            <div style={{ marginTop: 16 }}>
+              <h3>Doctor Notes</h3>
+              {data.notes?.map((n) => (
+                <div key={n._id} className="card">
+                  <p><strong>{n.doctorId?.name || "Doctor"}</strong></p>
+                  <p>{n.note}</p>
+                  <p style={{ fontSize: 12, color: "#666" }}>{new Date(n.createdAt).toLocaleString()}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div>
-            <GoalTrackerForm />
+            <GoalTrackerForm onSaved={() => setRefreshKey((k) => k + 1)} />
+            <div style={{ marginTop: 12 }}>
+            </div>
           </div>
         </section>
       </main>
-    </div>
-  );
-}
-
-function GoalCard({ title, value, percent }) {
-  return (
-    <div className="goal-card">
-      <h3>{title}</h3>
-      <p>{value}</p>
-      <div className="progress-bar">
-        <div
-          className="progress-fill"
-          style={{ width: `${Math.min(percent, 100)}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// simple form to let patient log daily metrics
-function GoalTrackerForm() {
-  return (
-    <div className="card">
-      <h2>Log Today's Goals</h2>
-      <form className="goal-form">
-        <label>Steps</label>
-        <input placeholder="e.g., 5000" />
-
-        <label>Water Intake (glasses)</label>
-        <input placeholder="e.g., 8" />
-
-        <label>Sleep (hours)</label>
-        <input placeholder="e.g., 7.5" />
-
-        <button type="button">Save (dummy)</button>
-      </form>
     </div>
   );
 }

@@ -1,69 +1,52 @@
-// src/routes/LoginPage.jsx
+
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext.jsx";
+import api from "../api/api.js";
+import LoginForm from "../component/auth/LoginForm.jsx";
 
 function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("patient"); // simple toggle
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleLogin = async ({ email, password, role }) => {
+    try {
+      const res = await api.post("/auth/login", { email, password });
 
-    // TODO: replace with real API call
-    if (!email || !password) {
-      setError("Please enter email and password.");
-      return;
+      const backendRole = res.data.role?.toLowerCase() === "doctor" ? "doctor" : "patient";
+
+      const userData = {
+        name: res.data.name,
+        email,
+        role: backendRole,
+        token: res.data.token,
+        userId: res.data.userId,
+      };
+
+      login(userData);
+
+      if (backendRole === "patient") navigate("/patient/dashboard");
+      else navigate("/provider/dashboard");
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
     }
-
-    // fake auth response
-    const fakeToken = "dummy-jwt-token";
-    login({ email, role, token: fakeToken, name: "David" });
-
-    if (role === "patient") navigate("/patient/dashboard");
-    else navigate("/provider/dashboard");
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        {/* Logo placeholder */}
         <div className="logo-box">150 x 150</div>
         <h2>Login</h2>
 
         {error && <p className="error">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
-          <label>Email</label>
-          <input value={email} onChange={(e) => setEmail(e.target.value)} />
-
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <label>Role</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="patient">Patient</option>
-            <option value="provider">Healthcare Provider</option>
-          </select>
-
-          <button type="submit">Login</button>
-        </form>
+        <LoginForm onLogin={handleLogin} />
 
         <div className="auth-links">
-          <button className="link-button" type="button">
-            Forgot Password?
-          </button>
-          <p>
-            New User? <Link to="/register">Register here</Link>
-          </p>
+          <p>New User? <Link to="/register">Register here</Link></p>
         </div>
       </div>
     </div>

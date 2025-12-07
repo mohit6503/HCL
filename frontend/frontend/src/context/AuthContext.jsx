@@ -4,11 +4,17 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // {name, role, token}
+  const [user, setUser] = useState(null); // { name, email, role, token, userId }
 
   useEffect(() => {
     const stored = localStorage.getItem("auth");
-    if (stored) setUser(JSON.parse(stored));
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem("auth");
+      }
+    }
   }, []);
 
   const login = (userData) => {

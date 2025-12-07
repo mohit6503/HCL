@@ -1,36 +1,53 @@
-// src/routes/ProviderDashboard.jsx
-import Sidebar from "../components/layout/Sidebar";
-
-const dummyPatients = [
-  { id: 1, name: "David", goalStatus: "Goal Met", upcomingCheck: "Blood test 23 Jun" },
-  { id: 2, name: "Sarah", goalStatus: "Missed Preventive Check", upcomingCheck: "Dental check 5 Jul" },
-];
+import { useEffect, useState } from "react";
+import api from "../api/api.js";
+import { useAuth } from "../context/AuthContext.jsx";
+import Sidebar from "../component/Layout/Sidebar.jsx";
+import PatientList from "../component/dashboard/PatientList.jsx";
 
 function ProviderDashboard() {
+  const { user } = useAuth();
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+
+    async function loadDashboard() {
+      try {
+        setLoading(true);
+        const res = await api.get(`/api/doctor/dashboard/${user.userId}`);
+
+        console.log("Doctor dashboard data:", res.data);
+
+        setPatients(res.data.patients || []);
+      } catch (err) {
+        console.error("Error loading doctor dashboard:", err);
+        setError("Unable to load patients. Check backend.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadDashboard();
+  }, [user]);
+
+  if (!user) return <div>Unauthorized</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div style={{ color: "red" }}>{error}</div>;
+
   return (
     <div className="app-layout">
-      <Sidebar role="provider" />
+      <Sidebar role="doctor" />
+
       <main className="main-content">
         <h1>My Patients</h1>
 
-        <table className="patient-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Compliance</th>
-              <th>Upcoming Check</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dummyPatients.map((p) => (
-              <tr key={p.id}>
-                <td>{p.name}</td>
-                <td>{p.goalStatus}</td>
-                <td>{p.upcomingCheck}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {patients.length === 0 ? (
+          <p>No patients assigned yet.</p>
+        ) : (
+          <PatientList patients={patients} />
+        )}
       </main>
     </div>
   );

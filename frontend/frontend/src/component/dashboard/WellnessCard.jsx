@@ -5,10 +5,7 @@ function WellnessCard({ title, value, percent }) {
       <h3>{title}</h3>
       <p>{value}</p>
       <div className="progress-bar">
-        <div
-          className="progress-fill"
-          style={{ width: `${Math.min(percent, 100)}%` }}
-        />
+        <div className="progress-fill" style={{ width: `${Math.min(percent, 100)}%` }} />
       </div>
     </div>
   );

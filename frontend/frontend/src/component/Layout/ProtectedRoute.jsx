@@ -7,7 +7,6 @@ function ProtectedRoute({ children, allowedRoles }) {
 
   if (!user) return <Navigate to="/login" replace />;
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // wrong role -> maybe send to their dashboard
     const redirect = user.role === "patient" ? "/patient/dashboard" : "/provider/dashboard";
     return <Navigate to={redirect} replace />;
   }

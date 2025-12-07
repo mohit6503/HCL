@@ -2,8 +2,8 @@
 function ReminderList({ reminders }) {
   return (
     <ul className="reminder-list">
-      {reminders.map((r) => (
-        <li key={r.id}>{r.text}</li>
+      {(reminders || []).map((r) => (
+        <li key={r._id ?? r.id}>{r.text ?? r.title}</li>
       ))}
     </ul>
   );

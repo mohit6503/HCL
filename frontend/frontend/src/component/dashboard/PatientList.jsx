@@ -11,10 +11,10 @@ function PatientList({ patients }) {
       </thead>
       <tbody>
         {patients.map((p) => (
-          <tr key={p.id}>
-            <td>{p.name}</td>
-            <td>{p.goalStatus}</td>
-            <td>{p.upcomingCheck}</td>
+          <tr key={p.patient._id ?? p.id}>
+            <td>{p.patient?.name ?? p.name}</td>
+            <td>{p.latestLog?.goalStatus ?? p.goalStatus ?? "—"}</td>
+            <td>{p.upcomingCheck ?? "—"}</td>
           </tr>
         ))}
       </tbody>

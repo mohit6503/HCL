@@ -4,10 +4,7 @@ function Navbar() {
     <header className="top-nav">
       <div className="logo">Healthcare Portal</div>
       <nav>
-        <a href="#home">Home</a>
-        <a href="#topics">Health Topics</a>
-        <a href="#services">Services</a>
-        <a href="#contact">Contact</a>
+        <a href="/public-health">Health Info</a>
       </nav>
     </header>
   );
