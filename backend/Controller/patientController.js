@@ -1,5 +1,5 @@
-import DailyLog from "../Models/DailyLog.js";
-import PatientNote from "../Models/PatientNote.js";
+import DailyLog from "../Models/Daily_log.js";
+import PatientNote from "../Models/Patient_Notes.js";
 
 export const markGoalStatusByPatient = async (req, res) => {
   try {

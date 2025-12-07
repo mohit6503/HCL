@@ -1,6 +1,6 @@
-import PatientProfile from "../Models/PatientProfile.js";
-import DailyLog from "../Models/DailyLog.js";
-import PatientNote from "../Models/PatientNote.js";
+import PatientProfile from "../Models/Patient_Profile.js";
+import DailyLog from "../Models/Daily_log.js";
+import PatientNote from "../Models/Patient_Notes.js";
 
 export const getAssignedPatients = async (req, res) => {
   try {

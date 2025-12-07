@@ -1,7 +1,7 @@
 import express from "express";
 import auth from "../middleware/authMiddleware.js";
 import allow from "../middleware/roleMiddleware.js";
-import { markGoalStatusByPatient, getPatientNotes } from "../controllers/patientController.js";
+import { markGoalStatusByPatient, getPatientNotes } from "../Controller/patientController.js";
 
 const router = express.Router();
 
