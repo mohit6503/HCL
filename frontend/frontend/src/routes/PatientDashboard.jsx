@@ -67,18 +67,28 @@ function PatientDashboard() {
             <ReminderList reminders={data.reminders || []} />
 
             <h2>Health Tip of the Day</h2>
-            <HealthTipCard tip={data.tip?.text || "No tip for today."} />
+            <HealthTipCard tip={data.tip?.text || "Drink at least 8 glasses of water daily."} />
 
-            <div style={{ marginTop: 16 }}>
+           <div style={{ marginTop: 16 }}>
               <h3>Doctor Notes</h3>
-              {data.notes?.map((n) => (
-                <div key={n._id} className="card">
-                  <p><strong>{n.doctorId?.name || "Doctor"}</strong></p>
-                  <p>{n.note}</p>
-                  <p style={{ fontSize: 12, color: "#666" }}>{new Date(n.createdAt).toLocaleString()}</p>
-                </div>
-              ))}
+
+              {(!data.notes || data.notes.length === 0) ? (
+                <p style={{ color: "#666", fontStyle: "italic" }}>
+                  No message from doctor
+                </p>
+              ) : (
+                data.notes.map((n) => (
+                  <div key={n._id} className="card">
+                    <p><strong>{n.doctorId?.name || "Doctor"}</strong></p>
+                    <p>{n.note}</p>
+                    <p style={{ fontSize: 12, color: "#666" }}>
+                      {new Date(n.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                ))
+              )}
             </div>
+
           </div>
 
           <div>
