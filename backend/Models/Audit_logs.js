@@ -12,6 +12,10 @@ const auditLogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    time:{
+        type: Date,
+        default: Date.now
+    }
 
   },
   { timestamps: true }
