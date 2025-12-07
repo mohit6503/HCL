@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import "./HomePage.css";
+import doctorImg from "../assets/male-working-as-paediatrician.jpg";
 
 function HomePage() {
   return (
     <div className="home-container">
 
-      {/* HEADER */}
+      
       <header className="home-header">
         <div className="home-logo">🏥</div>
         <h1 className="home-title">Healthcare Portal</h1>
@@ -16,7 +17,6 @@ function HomePage() {
         </div>
       </header>
 
-      {/* HERO SECTION */}
       <section className="home-hero">
         <div className="hero-left">
           <h2>Empowering Patients & Doctors</h2>
@@ -29,11 +29,7 @@ function HomePage() {
         </div>
 
         <div className="hero-right">
-          <img
-            src="https://cdn3d.iconscout.com/3d/premium/thumb/medical-care-3d-icon-6479698-5348280.png"
-            alt="Healthcare illustration"
-            className="hero-img"
-          />
+          <img src={doctorImg} alt="Healthcare illustration" className="hero-img" />
         </div>
       </section>
 

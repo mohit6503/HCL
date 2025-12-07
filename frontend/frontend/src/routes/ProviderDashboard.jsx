@@ -10,7 +10,7 @@ function ProviderDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // -------- FIXED DUMMY PATIENTS (NO RANDOM) --------
+  
   const fixedDummyPatients = [
     {
       patient: {
@@ -45,17 +45,16 @@ function ProviderDashboard() {
         console.log("Doctor dashboard data:", res.data);
 
         if (res.data.patients && res.data.patients.length > 0) {
-          // Show real patients
+         
           setPatients(res.data.patients);
         } else {
-          // Show the fixed 2 dummy patients
+         
           setPatients(fixedDummyPatients);
         }
 
       } catch (err) {
         console.error("Error loading doctor dashboard:", err);
 
-        // On backend error → show dummy data
         setPatients(fixedDummyPatients);
         setError("Unable to load real patients. Showing demo patients.");
       } finally {
